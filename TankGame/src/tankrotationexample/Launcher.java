@@ -1,6 +1,9 @@
 package tankrotationexample;
 
 import tankrotationexample.game.GameWorld;
+import tankrotationexample.game.ResourcePool;
+import tankrotationexample.game.ResourcePools;
+import tankrotationexample.game.Rocket;
 import tankrotationexample.menus.EndGamePanel;
 import tankrotationexample.menus.StartMenuPanel;
 import javax.swing.*;
@@ -43,7 +46,6 @@ public class Launcher {
     }
 
     private void initUIComponents(){
-        ResourceManager.loadAssets(); // load all assets for the game
         this.mainPanel = new JPanel(); // create a new main panel
         /*
          * start panel will be used to view the start menu. It will contain
@@ -97,6 +99,9 @@ public class Launcher {
     }
 
     public static void main(String[] args) {
+
+        ResourceManager.loadAssets(); // load all assets for the game
+        ResourcePools.addPool("rocket", new ResourcePool<>("rocket",Rocket.class, 500).fillPool(500)); // add a pool for rockets
         (new Launcher()).initUIComponents();
     }
 }

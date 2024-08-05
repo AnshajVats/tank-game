@@ -5,10 +5,10 @@ import tankrotationexample.GameConstants;
 import tankrotationexample.Launcher;
 import tankrotationexample.ResourceManager;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class GameWorld extends JPanel implements Runnable {
     private Tank t2;
     private final Launcher lf;
     private long tick = 0;
-    List <GameObject> gObjs = new ArrayList<>(1000);
+    private final List <GameObject> gObjs = new ArrayList<>(1000);
 
     /**
      *
@@ -38,11 +38,25 @@ public class GameWorld extends JPanel implements Runnable {
 
     @Override
     public void run() {
+        this.resetGame();
+        Sound bg = ResourceManager.getSound("background");
+//        bg.loop();
+//        bg.play();
         try {
             while (true) {
                 this.tick++;
-                this.t1.update(); // update tank
-                this.t2.update(); // update tank
+                for (int i = this.gObjs.size() - 1; i >= 0; i--) {
+                    GameObject obj = this.gObjs.get(i);
+                    if (obj instanceof UpdateAble u) {
+                        u.update(this);
+                    }
+                    else {
+                        break;
+                    }
+                }
+                AnimationManager.update();
+                this.checkCollisions();
+                this.gObjs.removeIf(obj -> obj.isDead());
                 this.repaint();   // redraw game
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our 
@@ -52,6 +66,29 @@ public class GameWorld extends JPanel implements Runnable {
             }
         } catch (InterruptedException ignored) {
             System.out.println(ignored);
+        }
+    }
+
+    private void checkCollisions() {
+        int count = 0;
+        for (int i = 0; i < this.gObjs.size(); i++) {
+            GameObject obj1 = this.gObjs.get(i);
+            if (!(obj1 instanceof UpdateAble)) {
+                continue;
+            }
+            for (int j = 0; j < this.gObjs.size(); j++) {
+                if (i == j) continue;
+
+                GameObject obj2 = this.gObjs.get(j);
+                if (!(obj2 instanceof CollideAble)) {
+                    continue;
+                }
+                count++;
+                if (obj1.getHitBox().intersects(obj2.getHitBox())) {
+                    ((CollideAble) obj1).handleCollision(obj2);
+                    ((CollideAble) obj2).handleCollision(obj1);
+                }
+            }
         }
     }
 
@@ -99,32 +136,87 @@ public class GameWorld extends JPanel implements Runnable {
         t1 = new Tank(300, 300, 0, 0, (short) 0, ResourceManager.getSprite("t1"));
         TankControl tc1 = new TankControl(t1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE);
         this.lf.getJf().addKeyListener(tc1);
+        this.gObjs.add(t1);
 
 
         t2 = new Tank(400, 400, 0, 0, (short) 180, ResourceManager.getSprite("t2"));
         TankControl tc2 = new TankControl(t2, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ENTER);
         this.lf.getJf().addKeyListener(tc2);
+        this.gObjs.add(t2);
     }
 
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         Graphics2D buffer = world.createGraphics();
-        this.renderFloor(buffer);
         buffer.fillRect(0,0, GameConstants.GAME_WORLD_WIDTH, GameConstants.GAME_WORLD_HEIGHT);
-        this.gObjs.forEach(obj -> obj.drawImage(buffer));
+        this.renderFloor(buffer);
+        for (int i = 0; i < this.gObjs.size(); i++) {
+            GameObject obj = this.gObjs.get(i);
+            obj.drawImg(buffer);
+        }
+        AnimationManager.render(buffer);
         this.t1.drawImage(buffer);
         this.t2.drawImage(buffer);
-        g2.drawImage(world, 0, 0, null);
+        this.displaySplitScreen(g2);
+        this.displayMiniMap(g2);
+
+        this.drawHealthBar(g2, t1, 0);
+        this.drawHealthBar(g2, t2, GameConstants.GAME_SCREEN_WIDTH/2);
     }
 
-    public void renderFloor(Graphics buffer) {
+    private void drawHealthBar(Graphics2D g, Tank tank, int xOffset) {
+        int healthBarWidth = 100;
+        int healthBarHeight = 10;
+        int healthBarX = xOffset + 10; // 10 pixels from the left edge of the screen
+        int healthBarY = 10; // 10 pixels from the top of the screen
+
+        // Background (red)
+        g.setColor(Color.RED);
+        g.fillRect(healthBarX, healthBarY, healthBarWidth, healthBarHeight);
+
+        // Foreground (green)
+        g.setColor(Color.GREEN);
+        int currentHealthWidth = (int)(healthBarWidth * (tank.getHealthPercentage() / 100));
+        g.fillRect(healthBarX, healthBarY, currentHealthWidth, healthBarHeight);
+    }
+
+
+
+
+
+    private void displaySplitScreen(Graphics2D buffer) {
+
+        BufferedImage lh = this.world.getSubimage((int)this.t1.getScreenX(), (int)this.t1.getScreenY(), GameConstants.GAME_SCREEN_WIDTH/2, GameConstants.GAME_SCREEN_HEIGHT);
+        BufferedImage rh = this.world.getSubimage((int)this.t2.getScreenX(), (int)this.t2.getScreenY(), GameConstants.GAME_SCREEN_WIDTH/2, GameConstants.GAME_SCREEN_HEIGHT);
+        buffer.drawImage(rh, GameConstants.GAME_SCREEN_WIDTH/2, 0, null);
+        buffer.drawImage(lh, 0, 0, null);
+
+    }
+
+    public void renderFloor(Graphics2D buffer) {
         BufferedImage floor = ResourceManager.getSprite("background");
         for (int i = 0; i < GameConstants.GAME_WORLD_WIDTH; i += 320) {
             for (int j = 0; j < GameConstants.GAME_WORLD_HEIGHT; j += 240) {
                 buffer.drawImage(floor, i, j, null);
             }
         }
+    }
 
+    static double scaleFactor = 0.15;
+    public void displayMiniMap(Graphics2D onScreenPanel) {
+
+        double mmx = GameConstants.GAME_SCREEN_WIDTH/2. - (GameConstants.GAME_WORLD_WIDTH* scaleFactor)/2.;
+        double mmy = GameConstants.GAME_SCREEN_HEIGHT - (GameConstants.GAME_WORLD_HEIGHT* scaleFactor) - 50;
+
+        BufferedImage mm = this.world.getSubimage(0, 0, GameConstants.GAME_WORLD_WIDTH, GameConstants.GAME_WORLD_HEIGHT);
+        AffineTransform sc =  AffineTransform.getTranslateInstance(mmx, mmy);
+        sc.scale(scaleFactor, scaleFactor);
+        onScreenPanel.drawImage(mm, sc, null);
+
+    }
+
+    public  void addGameObject(GameObject obj) {
+        this.gObjs.add(obj);
     }
 }

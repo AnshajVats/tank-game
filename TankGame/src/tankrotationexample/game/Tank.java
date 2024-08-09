@@ -33,7 +33,10 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
 
     private  long coolDown = 2000;
     private long lastShot = 0;
+    private int lives;
+    private int maxHealth;
     private int health;
+    private boolean dead;
 
 
     Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
@@ -43,7 +46,11 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
         this.vx = vx;
         this.vy = vy;
         this.angle = angle;
-        this.health = 3;
+        this.lives = 3;
+        maxHealth = 100;
+        this.health = this.maxHealth;
+        this.dead = false;
+
     }
 
     void setX(float x){ this.x = x; }
@@ -94,17 +101,6 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
         return screen_y;
     }
 
-    public int getHealth() {
-        return health;
-    }
-    public void setHealth(int health) {
-        this.health = health;
-    }
-
-    public float getHealthPercentage() {
-        return (float) this.health / 3 * 100; // Assuming max health is 3
-    }
-
     public boolean setCoolDown(long coolDown) {
         if (coolDown < 0) {
             return false;
@@ -151,7 +147,7 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
         float tankCenterY = y + tankImg.getHeight() / 2f;
 
         // Adjust these values as needed
-        float offsetX = tankImg.getWidth() ;
+        float offsetX = tankImg.getWidth() + 10;
         float offsetY = tankImg.getHeight();
 
         // Calculate the position of the rocket in front of the tank
@@ -226,6 +222,13 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
         return "x=" + x + ", y=" + y + ", angle=" + angle;
     }
 
+    public void drawHealthBar(Graphics2D g2d) {
+        int healthPercentage = getHealthPercentage();
+        g2d.setColor(Color.RED);
+        g2d.fillRect((int)x, (int)y - 10, this.img.getWidth(), 5);
+        g2d.setColor(Color.GREEN);
+        g2d.fillRect((int)x, (int)y - 10, (int)(this.img.getWidth() * (healthPercentage / 100.0)), 5);
+    }
 
     void drawImage(Graphics g) {
         AffineTransform rotation = AffineTransform.getTranslateInstance(x, y);
@@ -236,63 +239,75 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
         //g2d.rotate(Math.toRadians(angle), bounds.x + bounds.width/2, bounds.y + bounds.height/2);
         g2d.drawRect((int)x,(int)y,this.img.getWidth(), this.img.getHeight());
 
-        int healthBarWidth = this.img.getWidth();
-        int healthBarHeight = 5;
-        int healthBarY = (int)y - 10; // 10 pixels above the tank
-
-        // Background (red)
-        g2d.setColor(Color.RED);
-        g2d.fillRect((int)x, healthBarY, healthBarWidth, healthBarHeight);
-
-        // Foreground (green)
-        g2d.setColor(Color.GREEN);
-        int currentHealthWidth = (int)(healthBarWidth * (getHealthPercentage() / 100));
-        g2d.fillRect((int)x, healthBarY, currentHealthWidth, healthBarHeight);
-
+        drawHealthBar(g2d);
+        drawLives(g2d);
     }
 
+    private void drawLives(Graphics2D g2d) {
+        int circleSize = 10;
+        int spacing = 5;
+        int startX = (int)x;
+        int startY = (int)y + this.img.getHeight() + 10;
+
+        for (int i = 0; i < lives; i++) {
+            g2d.setColor(Color.RED);
+            g2d.fillOval(startX + (circleSize + spacing) * i, startY, circleSize, circleSize);
+        }
+    }
+
+    private int getHealthPercentage() {
+        return (int)(((double)this.health / this.maxHealth) * 100);
+    }
+
+    public int getLives() {
+        return this.lives;
+    }
+
+    public void setLives(int health) {
+        this.lives = health;
+    }
+
+    public void takeDamage(int damage) {
+        this.health = Math.max(0, this.health - damage);
+        if (this.health == 0) {
+            loseLife();
+        }
+    }
+
+    private void loseLife() {
+        this.lives--;
+        if (this.lives > 0) {
+            respawnAtRandom();
+        } else {
+            this.dead = true;
+        }
+    }
+    public boolean isDead() {
+        return this.dead;
+    }
+    public boolean hasRemainingLives() {
+        return this.lives > 0;
+    }
+
+    public void respawnAtRandom(){
+        Random random = new Random();
+        int spawnAreaMinX = 50;
+        int spawnAreaMaxX = GameConstants.GAME_WORLD_WIDTH - 50;
+        int spawnAreaMinY = 50;
+        int spawnAreaMaxY = GameConstants.GAME_WORLD_HEIGHT - 50;
+        this.setX(random.nextInt(spawnAreaMaxX - spawnAreaMinX) + spawnAreaMinX);
+        this.setY(random.nextInt(spawnAreaMaxY - spawnAreaMinY) + spawnAreaMinY);
+
+        // Reset health
+        this.health = this.maxHealth;
+    }
     @Override
     public void handleCollision(GameObject by) {
         if (by instanceof Wall || by instanceof BreakableWalls) {
-            // Calculate direction in degrees for better readability
-            double directionDegrees = Math.toDegrees(angle);
-
-            // Calculate overlap between tank and wall
-            Rectangle tankRect = this.getHitBox();
-            Rectangle wallRect = by.getHitBox();
-            int overlapX = Math.min(tankRect.x + tankRect.width, wallRect.x + wallRect.width) - Math.max(tankRect.x, wallRect.x);
-            int overlapY = Math.min(tankRect.y + tankRect.height, wallRect.y + wallRect.height) - Math.max(tankRect.y, wallRect.y);
-
-            // Push the tank out of the wall
-            if (overlapX < overlapY) {
-                if (tankRect.x < wallRect.x) {
-                    x -= overlapX;
-                } else {
-                    x += overlapX;
-                }
-            } else {
-                if (tankRect.y < wallRect.y) {
-                    y -= overlapY;
-                } else {
-                    y += overlapY;
-                }
-            }
-
-            // Prevent forward movement
-            if ((directionDegrees >= 0 && directionDegrees < 90) ||
-                    (directionDegrees >= 270 && directionDegrees < 360)) {
-                this.vx = 0;
-                this.vy = 0;
-            }
+            hitsObj(by);
         }
         if (by instanceof Rocket) {
-            Random random = new Random();
-            int spawnAreaMinX = 50;
-            int spawnAreaMaxX = GameConstants.GAME_WORLD_WIDTH - 50;
-            int spawnAreaMinY = 50;
-            int spawnAreaMaxY = GameConstants.GAME_WORLD_HEIGHT - 50;
-            this.setX(random.nextInt(spawnAreaMaxX - spawnAreaMinX) + spawnAreaMinX);
-            this.setY(random.nextInt(spawnAreaMaxY - spawnAreaMinY) + spawnAreaMinY);
+            takeDamage(10); // Increased damage to make it more noticeable
             ResourceManager.getSound("tankBlast").play();
             AnimationManager.add(new Animation(this.x, this.y, ResourceManager.getAnim("explosion_lg")));
         }
@@ -303,9 +318,50 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
             AnimationManager.add(new Animation(by.x, by.y, ResourceManager.getAnim("powerpick")));
         }
 
+        if (by instanceof Tank) {
+            // Calculate direction in degrees for better readability
+            hitsObj(by);
+
+
+        }
+
     }
 
+    public void hitsObj(GameObject by){
+        // Calculate overlap between tank and wall
+        double directionDegrees = Math.toDegrees(angle);
+        Rectangle tankRect = this.getHitBox();
+        Rectangle wallRect = by.getHitBox();
+        int overlapX = Math.min(tankRect.x + tankRect.width, wallRect.x + wallRect.width) - Math.max(tankRect.x, wallRect.x);
+        int overlapY = Math.min(tankRect.y + tankRect.height, wallRect.y + wallRect.height) - Math.max(tankRect.y, wallRect.y);
+
+        // Push the tank out of the wall
+        if (overlapX < overlapY) {
+            if (tankRect.x < wallRect.x) {
+                x -= overlapX;
+            } else {
+                x += overlapX;
+            }
+        } else {
+            if (tankRect.y < wallRect.y) {
+                y -= overlapY;
+            } else {
+                y += overlapY;
+            }
+        }
+
+        // Prevent forward movement
+        if ((directionDegrees >= 0 && directionDegrees < 90) ||
+                (directionDegrees >= 270 && directionDegrees < 360)) {
+            this.vx = 0;
+            this.vy = 0;
+        }
+    }
     public void setSpeed(float i) {
         this.R = i;
+    }
+
+    public void setDead(boolean b) {
+        this.dead = b;
     }
 }

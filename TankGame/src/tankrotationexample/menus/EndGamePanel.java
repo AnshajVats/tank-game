@@ -2,6 +2,7 @@ package tankrotationexample.menus;
 
 import tankrotationexample.Launcher;
 import tankrotationexample.ResourceManager;
+import tankrotationexample.game.GameWorld;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -13,12 +14,22 @@ public class EndGamePanel extends JPanel {
 
     private final BufferedImage menuBackground;
     private final Launcher lf;
+    private final GameWorld gameWorld;
+    private JLabel winnerLabel;
 
-    public EndGamePanel(Launcher lf) {
+
+    public EndGamePanel(Launcher lf, GameWorld gameWorld) {
         this.lf = lf;
+        this.gameWorld = gameWorld;
         this.menuBackground = ResourceManager.getSprite("title");
         this.setBackground(Color.BLACK);
         this.setLayout(null);
+
+        this.winnerLabel = new JLabel();
+        this.winnerLabel.setFont(new Font("Courier New", Font.BOLD, 24));
+        this.winnerLabel.setForeground(Color.WHITE);
+        this.winnerLabel.setBounds(150, 200, 250, 50);
+        this.add(winnerLabel);
 
         JButton start = new JButton("Restart Game");
         start.setFont(new Font("Courier New", Font.BOLD, 24));
@@ -33,6 +44,10 @@ public class EndGamePanel extends JPanel {
 
         this.add(start);
         this.add(exit);
+    }
+
+    public void setWinnerText(String winner) {
+        this.winnerLabel.setText("Winner: " + winner);
     }
 
     @Override

@@ -56,6 +56,7 @@ public class GameWorld extends JPanel implements Runnable {
                 }
                 AnimationManager.update();
                 this.checkCollisions();
+                checkDead();
                 this.gObjs.removeIf(obj -> obj.isDead());
                 this.repaint();   // redraw game
                 /*
@@ -68,6 +69,34 @@ public class GameWorld extends JPanel implements Runnable {
             System.out.println(ignored);
         }
     }
+
+    private void checkDead() {
+        if (this.t1.isDead()) {
+            this.t1.setX(300);
+            this.t1.setY(300);
+            Thread.currentThread().interrupt();
+            SwingUtilities.invokeLater(() -> lf.setFrame("end"));
+        }
+        if (this.t2.isDead()) {
+            this.t2.setX(400);
+            this.t2.setY(400);
+            Thread.currentThread().interrupt();
+            SwingUtilities.invokeLater(() -> lf.setFrame("end"));
+        }
+    }
+
+    public String getWinner() {
+        if (this.t1.isDead() && !this.t2.isDead()) {
+            t2.setDead(false);
+            return "Player 2";
+        } else if (this.t2.isDead() && !this.t1.isDead()) {
+            t1.setDead(false);
+            return "Player 1";
+        } else {
+            return "Draw";
+        }
+    }
+
 
     private void checkCollisions() {
         int count = 0;
@@ -161,29 +190,7 @@ public class GameWorld extends JPanel implements Runnable {
         this.displaySplitScreen(g2);
         this.displayMiniMap(g2);
 
-        this.drawHealthBar(g2, t1, 0);
-        this.drawHealthBar(g2, t2, GameConstants.GAME_SCREEN_WIDTH/2);
     }
-
-    private void drawHealthBar(Graphics2D g, Tank tank, int xOffset) {
-        int healthBarWidth = 100;
-        int healthBarHeight = 10;
-        int healthBarX = xOffset + 10; // 10 pixels from the left edge of the screen
-        int healthBarY = 10; // 10 pixels from the top of the screen
-
-        // Background (red)
-        g.setColor(Color.RED);
-        g.fillRect(healthBarX, healthBarY, healthBarWidth, healthBarHeight);
-
-        // Foreground (green)
-        g.setColor(Color.GREEN);
-        int currentHealthWidth = (int)(healthBarWidth * (tank.getHealthPercentage() / 100));
-        g.fillRect(healthBarX, healthBarY, currentHealthWidth, healthBarHeight);
-    }
-
-
-
-
 
     private void displaySplitScreen(Graphics2D buffer) {
 

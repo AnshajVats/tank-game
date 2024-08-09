@@ -2,7 +2,7 @@ package tankrotationexample.game;
 
 import java.awt.image.BufferedImage;
 
-public class HealthPowerUp extends GameObject implements PowerUp, CollideAble  {
+public class HealthPowerUp extends GameObject implements PowerUp, CollideAble {
 
     public HealthPowerUp(float x, float y, BufferedImage img) {
         super(x, y, img);
@@ -10,7 +10,7 @@ public class HealthPowerUp extends GameObject implements PowerUp, CollideAble  {
 
     @Override
     public void applyPowerUp(Tank tank) {
-        tank.setHealth(tank.getHealth() + 1);
+        tank.setLives(tank.getLives() + 1);
     }
 
     @Override

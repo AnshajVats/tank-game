@@ -17,7 +17,7 @@ public class Rocket extends GameObject implements Poolable, UpdateAble, CollideA
     private final float ROTATIONSPEED = 3.0f;
 
     public Rocket(BufferedImage img) {
-        super(0,0,img);
+        super(0, 0, img);
         this.vx = 0;
         this.vy = 0;
         this.angle = 0;
@@ -36,7 +36,7 @@ public class Rocket extends GameObject implements Poolable, UpdateAble, CollideA
         x += vx;
         y += vy;
         checkBorder();
-        this.hitBox.setLocation((int)x, (int)y);
+        this.hitBox.setLocation((int) x, (int) y);
     }
 
     public void handleCollision(GameObject otherObject) {
@@ -44,7 +44,7 @@ public class Rocket extends GameObject implements Poolable, UpdateAble, CollideA
         if (otherObject instanceof Wall || otherObject instanceof BreakableWalls) {
             this.dead = true;
             ResourceManager.getSound("hit").play();
-            AnimationManager.add (new Animation(this.x, this.y, ResourceManager.getAnim("explosion_lg")));
+            AnimationManager.add(new Animation(this.x, this.y, ResourceManager.getAnim("explosion_lg")));
         }
         if (otherObject instanceof Tank) {
             this.dead = true;
@@ -76,15 +76,13 @@ public class Rocket extends GameObject implements Poolable, UpdateAble, CollideA
     }
 
 
-
-
     void drawImage(Graphics g) {
         AffineTransform rotation = AffineTransform.getTranslateInstance(x, y);
         rotation.rotate(Math.toRadians(angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawImage(this.img, rotation, null);
         g2d.setColor(Color.RED);
-        g2d.drawRect((int)x,(int)y,this.img.getWidth(), this.img.getHeight());
+        g2d.drawRect((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
         g2d.setColor(Color.RED);
         g2d.drawRect(hitBox.x, hitBox.y, hitBox.width, hitBox.height);
 
@@ -101,7 +99,7 @@ public class Rocket extends GameObject implements Poolable, UpdateAble, CollideA
         super.x = x;
         super.y = y;
         this.angle = angle;
-        this.hitBox.setLocation((int)x, (int)y);
+        this.hitBox.setLocation((int) x, (int) y);
 
     }
 

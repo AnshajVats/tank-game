@@ -47,6 +47,21 @@ public class Launcher {
         this.jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
+    public void restartGame() {
+        // Remove the old game panel
+        this.mainPanel.remove(this.gamePanel);
+
+        // Create a new game panel
+        this.gamePanel = new GameWorld(this);
+        this.gamePanel.InitializeGame();
+
+        // Add the new game panel
+        this.mainPanel.add(gamePanel, "game");
+
+        // Switch to the game panel
+        this.setFrame("game");
+    }
+
     private void initUIComponents(){
         this.mainPanel = new JPanel(); // create a new main panel
         /*

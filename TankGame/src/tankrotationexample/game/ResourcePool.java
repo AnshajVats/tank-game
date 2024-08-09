@@ -3,12 +3,13 @@ package tankrotationexample.game;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+
 import tankrotationexample.ResourceManager;
 
-public class ResourcePool <G extends Poolable>  {
+public class ResourcePool<G extends Poolable> {
 
     private static final int INIT_CAPACITY = 100;
-    private  final String resourceName;
+    private final String resourceName;
     public final Class<G> resourceClass;
     private final ArrayList<G> resources;
 

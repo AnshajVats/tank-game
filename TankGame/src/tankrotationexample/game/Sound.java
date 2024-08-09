@@ -6,7 +6,7 @@ import javax.sound.sampled.FloatControl;
 public class Sound {
 
     private final Clip clip;
-    private  int loopCount;
+    private int loopCount;
 
     public Sound(Clip c) {
         this.clip = c;

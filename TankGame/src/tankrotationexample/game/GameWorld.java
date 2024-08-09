@@ -27,7 +27,7 @@ public class GameWorld extends JPanel implements Runnable {
     private Tank t2;
     private final Launcher lf;
     private long tick = 0;
-    private final List <GameObject> gObjs = new ArrayList<>(1000);
+    private final List<GameObject> gObjs = new ArrayList<>(1000);
 
     /**
      *
@@ -49,8 +49,7 @@ public class GameWorld extends JPanel implements Runnable {
                     GameObject obj = this.gObjs.get(i);
                     if (obj instanceof UpdateAble u) {
                         u.update(this);
-                    }
-                    else {
+                    } else {
                         break;
                     }
                 }
@@ -60,9 +59,9 @@ public class GameWorld extends JPanel implements Runnable {
                 this.gObjs.removeIf(obj -> obj.isDead());
                 this.repaint();   // redraw game
                 /*
-                 * Sleep for 1000/144 ms (~6.9ms). This is done to have our 
-                 * loop run at a fixed rate per/sec. 
-                */
+                 * Sleep for 1000/144 ms (~6.9ms). This is done to have our
+                 * loop run at a fixed rate per/sec.
+                 */
                 Thread.sleep(1000 / 144);
             }
         } catch (InterruptedException ignored) {
@@ -152,8 +151,7 @@ public class GameWorld extends JPanel implements Runnable {
                 }
                 row++;
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -178,7 +176,7 @@ public class GameWorld extends JPanel implements Runnable {
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         Graphics2D buffer = world.createGraphics();
-        buffer.fillRect(0,0, GameConstants.GAME_WORLD_WIDTH, GameConstants.GAME_WORLD_HEIGHT);
+        buffer.fillRect(0, 0, GameConstants.GAME_WORLD_WIDTH, GameConstants.GAME_WORLD_HEIGHT);
         this.renderFloor(buffer);
         for (int i = 0; i < this.gObjs.size(); i++) {
             GameObject obj = this.gObjs.get(i);
@@ -194,9 +192,9 @@ public class GameWorld extends JPanel implements Runnable {
 
     private void displaySplitScreen(Graphics2D buffer) {
 
-        BufferedImage lh = this.world.getSubimage((int)this.t1.getScreenX(), (int)this.t1.getScreenY(), GameConstants.GAME_SCREEN_WIDTH/2, GameConstants.GAME_SCREEN_HEIGHT);
-        BufferedImage rh = this.world.getSubimage((int)this.t2.getScreenX(), (int)this.t2.getScreenY(), GameConstants.GAME_SCREEN_WIDTH/2, GameConstants.GAME_SCREEN_HEIGHT);
-        buffer.drawImage(rh, GameConstants.GAME_SCREEN_WIDTH/2, 0, null);
+        BufferedImage lh = this.world.getSubimage((int) this.t1.getScreenX(), (int) this.t1.getScreenY(), GameConstants.GAME_SCREEN_WIDTH / 2, GameConstants.GAME_SCREEN_HEIGHT);
+        BufferedImage rh = this.world.getSubimage((int) this.t2.getScreenX(), (int) this.t2.getScreenY(), GameConstants.GAME_SCREEN_WIDTH / 2, GameConstants.GAME_SCREEN_HEIGHT);
+        buffer.drawImage(rh, GameConstants.GAME_SCREEN_WIDTH / 2, 0, null);
         buffer.drawImage(lh, 0, 0, null);
 
     }
@@ -211,19 +209,20 @@ public class GameWorld extends JPanel implements Runnable {
     }
 
     static double scaleFactor = 0.15;
+
     public void displayMiniMap(Graphics2D onScreenPanel) {
 
-        double mmx = GameConstants.GAME_SCREEN_WIDTH/2. - (GameConstants.GAME_WORLD_WIDTH* scaleFactor)/2.;
-        double mmy = GameConstants.GAME_SCREEN_HEIGHT - (GameConstants.GAME_WORLD_HEIGHT* scaleFactor) - 50;
+        double mmx = GameConstants.GAME_SCREEN_WIDTH / 2. - (GameConstants.GAME_WORLD_WIDTH * scaleFactor) / 2.;
+        double mmy = GameConstants.GAME_SCREEN_HEIGHT - (GameConstants.GAME_WORLD_HEIGHT * scaleFactor) - 50;
 
         BufferedImage mm = this.world.getSubimage(0, 0, GameConstants.GAME_WORLD_WIDTH, GameConstants.GAME_WORLD_HEIGHT);
-        AffineTransform sc =  AffineTransform.getTranslateInstance(mmx, mmy);
+        AffineTransform sc = AffineTransform.getTranslateInstance(mmx, mmy);
         sc.scale(scaleFactor, scaleFactor);
         onScreenPanel.drawImage(mm, sc, null);
 
     }
 
-    public  void addGameObject(GameObject obj) {
+    public void addGameObject(GameObject obj) {
         this.gObjs.add(obj);
     }
 }

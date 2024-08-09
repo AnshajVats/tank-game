@@ -27,14 +27,13 @@ public abstract class GameObject {
             case "3" -> new SpeedUp(x, y, ResourceManager.getSprite("speed"));
             case "4" -> new RocketPowerUp(x, y, ResourceManager.getSprite("pickUp"));
             case "5" -> new HealthPowerUp(x, y, ResourceManager.getSprite("health"));
-            default -> throw new IllegalArgumentException("Unknown type -> %s\n" .formatted(type));
+            default -> throw new IllegalArgumentException("Unknown type -> %s\n".formatted(type));
         };
     }
 
 
-
     public void drawImg(Graphics g) {
-            g.drawImage(this.img, (int) this.x, (int) this.y, null);
+        g.drawImage(this.img, (int) this.x, (int) this.y, null);
     }
 
     public Rectangle getHitBox() {

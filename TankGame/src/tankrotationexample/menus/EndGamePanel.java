@@ -28,13 +28,16 @@ public class EndGamePanel extends JPanel {
         this.winnerLabel = new JLabel();
         this.winnerLabel.setFont(new Font("Courier New", Font.BOLD, 24));
         this.winnerLabel.setForeground(Color.WHITE);
-        this.winnerLabel.setBounds(150, 200, 250, 50);
+        this.winnerLabel.setBounds(150, 250, 250, 50);
         this.add(winnerLabel);
 
         JButton start = new JButton("Restart Game");
         start.setFont(new Font("Courier New", Font.BOLD, 24));
         start.setBounds(150, 300, 250, 50);
         start.addActionListener((actionEvent -> this.lf.setFrame("game")));
+        start.addActionListener((actionEvent -> {
+            this.lf.restartGame();
+        }));
 
 
         JButton exit = new JButton("Exit");

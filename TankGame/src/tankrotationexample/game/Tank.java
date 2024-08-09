@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Random;
 
 /**
- *
  * @author anthony-pc
  */
 public class Tank extends GameObject implements UpdateAble, CollideAble {
@@ -31,7 +30,7 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
     private boolean LeftPressed;
     private boolean shoot;
 
-    private  long coolDown = 2000;
+    private long coolDown = 2000;
     private long lastShot = 0;
     private int lives;
     private int maxHealth;
@@ -53,9 +52,13 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
 
     }
 
-    void setX(float x){ this.x = x; }
+    void setX(float x) {
+        this.x = x;
+    }
 
-    void setY(float y) { this. y = y;}
+    void setY(float y) {
+        this.y = y;
+    }
 
     void toggleUpPressed() {
         this.UpPressed = true;
@@ -69,7 +72,9 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
         this.RightPressed = true;
     }
 
-    void toggleShootPressed() {this.shoot = true;}
+    void toggleShootPressed() {
+        this.shoot = true;
+    }
 
     void toggleLeftPressed() {
         this.LeftPressed = true;
@@ -94,10 +99,12 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
     void unToggleShootPressed() {
         this.shoot = false;
     }
+
     public float getScreenX() {
         return screen_x;
     }
-    public  float getScreenY() {
+
+    public float getScreenY() {
         return screen_y;
     }
 
@@ -108,7 +115,6 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
         this.coolDown = coolDown;
         return true;
     }
-
 
 
     public void update(GameWorld gw) {
@@ -135,7 +141,7 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
         }
 
         centerScreen();
-        this.hitBox.setLocation((int)x, (int)y);
+        this.hitBox.setLocation((int) x, (int) y);
     }
 
     private void shoot(GameWorld gw) {
@@ -151,8 +157,8 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
         float offsetY = tankImg.getHeight();
 
         // Calculate the position of the rocket in front of the tank
-        float rocketX = tankCenterX + offsetX * (float)Math.cos(Math.toRadians(angle)) - roc.getWidth() / 2f;
-        float rocketY = tankCenterY + offsetY * (float)Math.sin(Math.toRadians(angle)) - roc.getHeight() / 2f;
+        float rocketX = tankCenterX + offsetX * (float) Math.cos(Math.toRadians(angle)) - roc.getWidth() / 2f;
+        float rocketY = tankCenterY + offsetY * (float) Math.sin(Math.toRadians(angle)) - roc.getHeight() / 2f;
 
         var p = ResourcePools.getPool("rocket");
         p.initObject(rocketX, rocketY, angle);
@@ -171,11 +177,11 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
     }
 
     private void moveBackwards() {
-        vx =  Math.round(R * Math.cos(Math.toRadians(angle)));
-        vy =  Math.round(R * Math.sin(Math.toRadians(angle)));
+        vx = Math.round(R * Math.cos(Math.toRadians(angle)));
+        vy = Math.round(R * Math.sin(Math.toRadians(angle)));
         x -= vx;
         y -= vy;
-       checkBorder();
+        checkBorder();
     }
 
     private void moveForwards() {
@@ -189,13 +195,13 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
 
     private void centerScreen() {
 
-        this.screen_x = this.x - GameConstants.GAME_SCREEN_WIDTH/4f;
-        this.screen_y = this.y - GameConstants.GAME_SCREEN_HEIGHT/2f;
+        this.screen_x = this.x - GameConstants.GAME_SCREEN_WIDTH / 4f;
+        this.screen_y = this.y - GameConstants.GAME_SCREEN_HEIGHT / 2f;
         if (this.screen_x < 0) this.screen_x = 0;
-        if (this.screen_x > GameConstants.GAME_WORLD_WIDTH -  GameConstants.GAME_SCREEN_WIDTH /2f)
-            this.screen_x = GameConstants.GAME_WORLD_WIDTH - GameConstants.GAME_SCREEN_WIDTH/2f;
-        if(this.screen_y < 0) this.screen_y = 0;
-        if(this.screen_y > GameConstants.GAME_WORLD_HEIGHT - GameConstants.GAME_SCREEN_HEIGHT)
+        if (this.screen_x > GameConstants.GAME_WORLD_WIDTH - GameConstants.GAME_SCREEN_WIDTH / 2f)
+            this.screen_x = GameConstants.GAME_WORLD_WIDTH - GameConstants.GAME_SCREEN_WIDTH / 2f;
+        if (this.screen_y < 0) this.screen_y = 0;
+        if (this.screen_y > GameConstants.GAME_WORLD_HEIGHT - GameConstants.GAME_SCREEN_HEIGHT)
             this.screen_y = GameConstants.GAME_WORLD_HEIGHT - GameConstants.GAME_SCREEN_HEIGHT;
 
 
@@ -212,7 +218,7 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
             y = 40;
         }
         if (y >= GameConstants.GAME_WORLD_HEIGHT - 110) {
-            y = GameConstants.GAME_WORLD_HEIGHT -  110;
+            y = GameConstants.GAME_WORLD_HEIGHT - 110;
         }
     }
 
@@ -225,9 +231,9 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
     public void drawHealthBar(Graphics2D g2d) {
         int healthPercentage = getHealthPercentage();
         g2d.setColor(Color.RED);
-        g2d.fillRect((int)x, (int)y - 10, this.img.getWidth(), 5);
+        g2d.fillRect((int) x, (int) y - 10, this.img.getWidth(), 5);
         g2d.setColor(Color.GREEN);
-        g2d.fillRect((int)x, (int)y - 10, (int)(this.img.getWidth() * (healthPercentage / 100.0)), 5);
+        g2d.fillRect((int) x, (int) y - 10, (int) (this.img.getWidth() * (healthPercentage / 100.0)), 5);
     }
 
     void drawImage(Graphics g) {
@@ -237,7 +243,7 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
         g2d.drawImage(this.img, rotation, null);
         g2d.setColor(Color.RED);
         //g2d.rotate(Math.toRadians(angle), bounds.x + bounds.width/2, bounds.y + bounds.height/2);
-        g2d.drawRect((int)x,(int)y,this.img.getWidth(), this.img.getHeight());
+        g2d.drawRect((int) x, (int) y, this.img.getWidth(), this.img.getHeight());
 
         drawHealthBar(g2d);
         drawLives(g2d);
@@ -246,8 +252,8 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
     private void drawLives(Graphics2D g2d) {
         int circleSize = 10;
         int spacing = 5;
-        int startX = (int)x;
-        int startY = (int)y + this.img.getHeight() + 10;
+        int startX = (int) x;
+        int startY = (int) y + this.img.getHeight() + 10;
 
         for (int i = 0; i < lives; i++) {
             g2d.setColor(Color.RED);
@@ -256,7 +262,7 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
     }
 
     private int getHealthPercentage() {
-        return (int)(((double)this.health / this.maxHealth) * 100);
+        return (int) (((double) this.health / this.maxHealth) * 100);
     }
 
     public int getLives() {
@@ -282,14 +288,20 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
             this.dead = true;
         }
     }
+
     public boolean isDead() {
         return this.dead;
     }
+
     public boolean hasRemainingLives() {
         return this.lives > 0;
     }
 
-    public void respawnAtRandom(){
+    public int getSpeed() {
+        return (int) this.R;
+    }
+
+    public void respawnAtRandom() {
         Random random = new Random();
         int spawnAreaMinX = 50;
         int spawnAreaMaxX = GameConstants.GAME_WORLD_WIDTH - 50;
@@ -301,6 +313,7 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
         // Reset health
         this.health = this.maxHealth;
     }
+
     @Override
     public void handleCollision(GameObject by) {
         if (by instanceof Wall || by instanceof BreakableWalls) {
@@ -312,7 +325,7 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
             AnimationManager.add(new Animation(this.x, this.y, ResourceManager.getAnim("explosion_lg")));
         }
 
-        if (by instanceof PowerUp){
+        if (by instanceof PowerUp) {
             ((PowerUp) by).applyPowerUp(this);
             ResourceManager.getSound("powerUp").play();
             AnimationManager.add(new Animation(by.x, by.y, ResourceManager.getAnim("powerpick")));
@@ -327,7 +340,7 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
 
     }
 
-    public void hitsObj(GameObject by){
+    public void hitsObj(GameObject by) {
         // Calculate overlap between tank and wall
         double directionDegrees = Math.toDegrees(angle);
         Rectangle tankRect = this.getHitBox();
@@ -357,6 +370,7 @@ public class Tank extends GameObject implements UpdateAble, CollideAble {
             this.vy = 0;
         }
     }
+
     public void setSpeed(float i) {
         this.R = i;
     }

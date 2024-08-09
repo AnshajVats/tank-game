@@ -15,8 +15,4 @@ public class ResourcePools {
     public static Poolable getPool(String name) {
         return ResourcePools.pools.get(name).removeFromPool();
     }
-
-//    public static void returnPool(String name, Poolable poolable) {
-//        ResourcePools.pools.get(name).addToPool(poolable);
-//    }
 }

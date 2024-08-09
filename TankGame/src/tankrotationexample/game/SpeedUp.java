@@ -10,7 +10,7 @@ public class SpeedUp extends GameObject implements PowerUp, CollideAble {
 
     @Override
     public void applyPowerUp(Tank tank) {
-        tank.setSpeed(5);
+        tank.setSpeed(tank.getSpeed() + 1);
     }
 
     @Override

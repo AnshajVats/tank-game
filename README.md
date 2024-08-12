@@ -1,13 +1,5 @@
 # csc413-tankgame
 
-
-## Purpose of jar Folder 
-The jar folder will be used to store the built jar of your term-project.
-
-`NO SOURCE CODE SHOULD BE IN THIS FOLDER. DOING SO WILL CAUSE POINTS TO BE DEDUCTED`
-
-`THIS FOLDER CAN NOT BE DELETED OR MOVED`
-
 # Required Information about the Tank Game
 
 ## Version of Java Used: SDK 21

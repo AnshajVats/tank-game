@@ -1,4 +1,4 @@
-# csc413-tankgame
+# Tankgame
 
 # Required Information about the Tank Game
 

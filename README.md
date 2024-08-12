@@ -1,12 +1,6 @@
 # csc413-tankgame
 
 
-| Student Information |                |
-|:-------------------:|----------------|
-|  Student Name       | Anshaj vats    |
-|  Student Email      | avats@sfsu.edu |
-
-
 ## Purpose of jar Folder 
 The jar folder will be used to store the built jar of your term-project.
 
@@ -14,13 +8,38 @@ The jar folder will be used to store the built jar of your term-project.
 
 `THIS FOLDER CAN NOT BE DELETED OR MOVED`
 
-# Required Information when Submitting Tank Game
+# Required Information about the Tank Game
 
 ## Version of Java Used: SDK 21
 
 ## IDE used: IntelliJ IDEA
 
 ## Steps to Import project into IDE:
+
+1. Open Your Project:
+Open IntelliJ IDEA and load the project.
+3. Configure the Artifact:
+Go to File > Project Structure (or press Ctrl+Alt+Shift+S).
+In the Project Structure window, select the Artifacts option on the left.
+Click the + button to add a new artifact, then select JAR > From
+modules with dependencies.
+Choose your main module(lanucher.java)
+IntelliJ will automatically set up the output directory and include
+necessary libraries in the JAR if required.
+4. Build the Artifact:
+Once the artifact is configured, click OK to close the Project Structure
+window.
+Now, go to Build > Build Artifact
+Select the artifact you just created and click Build.
+IntelliJ will compile your project and create the JAR file in the
+specified output directory.
+5. Locate the JAR File:
+After the build is complete, navigate to the output directory to find
+your JAR file. By default, this directory might be something like
+out/artifacts/[artifact_name].
+If you want you can run the launcher.java to run the game. But then you
+will need to set up the resource folder in project structure > modules>
+resources.
 
 ## Steps to Build your Project:
 
@@ -30,11 +49,11 @@ The jar folder will be used to store the built jar of your term-project.
 
 2. Clone the Repository
     - Provide the git command to clone your project
-    - Example: `git clone git@github.com:csc413-SFSU-SU2024/csc413-tankgame-AnshajVats.git`
+    - Example: `git clone git@github.com:AnshajVats/tank-game.git`
 
 3. Navigate to Project Directory
     - Instruct users to change to the project directory
-    - Example: `cd csc413-tankgame-AnshajVats`
+    - Example: `cd tank-game`
 4. Setup the SDK
    - Example: `export JAVA_HOME=/path/to/jdk-21`
    - On IntelliJ IDEA, go to File -> Project Structure -> Project SDK -> Add SDK -> Select the path to the SDK 21
